@@ -18,8 +18,9 @@ input{-webkit-user-select:text;user-select:text}
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
-/* clear the notch and the home bar when opened from the Home Screen */
-body{padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+/* clear the Dynamic Island and home bar from the Home Screen; `html body` beats the app's own body padding, which loads later */
+html body{padding-top:calc(26px + env(safe-area-inset-top,0px));padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+.over{padding-top:calc(20px + env(safe-area-inset-top,0px))!important}
 </style>
 </head>
 <body>

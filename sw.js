@@ -1,5 +1,5 @@
-/* 40by40 offline cache, build 5a621169cb */
-const CACHE='40by40-5a621169cb';
+/* 40by40 offline cache, build 903229ef38 */
+const CACHE='40by40-903229ef38';
 const FILES=["./", "FLAGS-LICENSE.txt", "countries.json", "fonts/Anton-Regular.ttf", "fonts/OFL-Anton.txt", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "index.html", "manifest.webmanifest"];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
