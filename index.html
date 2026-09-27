@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2b50ff">
+<title>40by40</title>
+<style>
+@font-face{font-family:"Anton";src:url(fonts/Anton-Regular.ttf) format("truetype");font-weight:400;font-display:block}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;-webkit-user-select:none;user-select:none;overscroll-behavior-y:none}
+input{-webkit-user-select:text;user-select:text}
+</style>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="40by40">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+/* clear the notch and the home bar when opened from the Home Screen */
+body{padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+</style>
+</head>
+<body>
+
+<style>
+/* Electric: one committed look, no light/dark switch */
+:root{
+  --blue:#2b50ff;      /* ground */
+  --white:#fff;        /* text */
+  --been:#ffe500;      /* visited */
+  --soon:#3df2c4;      /* booked */
+  --dim:rgba(255,255,255,.22);   /* someday dot */
+  --mute:rgba(255,255,255,.58);  /* someday text */
+  --soft:rgba(255,255,255,.14);
+  --deep:#0d1b6b;      /* dark text on bright buttons, sheets */
+  color-scheme:dark;
+}
+html,body{background:var(--blue)}
+body{color:var(--white);font-family:"Anton",Impact,"Arial Narrow",sans-serif;padding-inline:16px;padding-block:18px 64px}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+.app{max-width:560px;margin:0 auto}
+
+h1{display:inline-block;margin:0;font-weight:400;font-size:60px;line-height:.88;white-space:nowrap;text-transform:uppercase}
+.status{display:grid;grid-template-columns:7fr 3fr;gap:10px;align-items:center;margin-top:14px}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:2.5px}
+.dots i,.key i{display:block;aspect-ratio:1;border-radius:50%;background:var(--dim)}
+.dots i.v,.key i.v{background:var(--been)}
+.dots i.u,.key i.u{background:var(--soon)}
+.count{text-align:right;font-size:clamp(50px,15.5vw,86px);line-height:.85;white-space:nowrap;font-variant-numeric:tabular-nums}
+.count small{font-size:.42em}
+.total{font-weight:400;letter-spacing:.03em;margin-top:7px;text-align:right;font-family:"Anton",Impact,sans-serif;font-size:14px;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.key{font-weight:400;letter-spacing:.03em;display:flex;gap:16px;margin:12px 0 34px;font-family:"Anton",Impact,sans-serif;font-size:14px;text-transform:uppercase}
+.key span{display:flex;align-items:center;gap:6px}
+.key i{width:9px}
+
+section{margin-bottom:36px}
+.sh{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+h2{display:flex;align-items:flex-start;gap:6px;margin:0;font-weight:400;font-size:clamp(46px,13vw,68px);line-height:.85;text-transform:uppercase}
+h2 sup{font-weight:400;letter-spacing:.03em;text-transform:uppercase;font-family:"Anton",Impact,sans-serif;font-size:15px;line-height:1;margin-top:3px}
+.been h2{color:var(--been)}
+.soon h2{color:var(--soon)}
+.someday h2{color:var(--mute)}
+.add{margin-left:auto;flex:none;width:44px;height:44px;border-radius:50%;border:0;background:none;box-shadow:inset 0 0 0 2.5px currentColor;display:grid;place-items:center;cursor:pointer}
+.add svg{width:18px;height:18px}
+.been .add{color:var(--been)}.soon .add{color:var(--soon)}.someday .add{color:var(--mute)}
+.add:hover{background:var(--soft)}
+.add:focus-visible,.t:focus-visible,.opts button:focus-visible,.done:focus-visible,.r:focus-visible,.rm:focus-visible{outline:3px solid var(--been);outline-offset:3px}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 8px}
+.empty{font-weight:400;letter-spacing:.03em;text-transform:uppercase;grid-column:1/-1;margin:0;font-family:"Anton",Impact,sans-serif;font-size:16px;line-height:1.25;color:var(--mute)}
+.t{border:0;background:none;padding:0;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0;-webkit-tap-highlight-color:transparent}
+.fl{display:block;width:100%;aspect-ratio:3/2;border-radius:4px;object-fit:cover;background:var(--soft)}
+.t:hover .fl{transform:translateY(-2px)}
+.fl{transition:transform .15s}
+.t b{font-weight:400;font-size:clamp(13px,3.7vw,17px);line-height:.95;text-transform:uppercase;overflow-wrap:anywhere}
+.soon .t .fl{box-shadow:0 0 0 3px var(--soon)}
+.soon .t b{color:var(--soon)}
+.someday .t .fl{filter:grayscale(1);opacity:.35}
+.someday .t b{color:var(--mute)}
+.t.pop .fl{animation:pop .45s ease}
+@keyframes pop{40%{transform:scale(1.12)}}
+
+/* full-screen search */
+.over{position:fixed;inset:0;z-index:20;background:var(--blue);display:flex;flex-direction:column;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 0}
+.over .in{max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;min-height:0;flex:1}
+.bar{display:flex;gap:10px;align-items:center}
+.field{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:50px;padding:0 14px;border-radius:14px;background:var(--white);color:var(--deep)}
+.field svg{width:18px;height:18px;flex:none}
+.field input{flex:1;min-width:0;border:0;outline:0;background:none;font-family:"Anton",Impact,sans-serif;font-weight:400;font-size:22px;letter-spacing:.01em;text-transform:uppercase;color:var(--deep);padding-top:2px}
+.field input::placeholder{color:#8a94c9;text-transform:uppercase}
+.field input::-webkit-search-cancel-button{-webkit-appearance:none}
+.done{flex:none;height:50px;padding:3px 18px 0;border:0;border-radius:14px;background:var(--been);color:var(--deep);font-family:"Anton",Impact,sans-serif;font-size:22px;text-transform:uppercase;cursor:pointer}
+.done:hover{filter:brightness(1.05)}
+.done:active{transform:scale(.97)}
+.mode{font-weight:400;letter-spacing:.03em;display:flex;align-items:center;gap:8px;margin:16px 0 12px;font-family:"Anton",Impact,sans-serif;font-size:14px;text-transform:uppercase;color:var(--mute)}
+.mode b{font-family:"Anton",sans-serif;font-weight:400;font-size:15px;letter-spacing:.02em;padding:4px 10px 3px;border-radius:99px;color:var(--deep)}
+.mode b.v{background:var(--been)}.mode b.u{background:var(--soon)}.mode b.w{background:var(--white)}
+.results{flex:1;overflow-y:auto;padding:12px 10px calc(30px + env(safe-area-inset-bottom,0px)) 2px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px;align-content:start}
+.r{position:relative;border:0;background:none;padding:0;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0}
+.r b{font-weight:400;font-size:clamp(12px,3.4vw,15px);line-height:.95;text-transform:uppercase;overflow-wrap:anywhere}
+.r small{font-weight:400;letter-spacing:.03em;font-family:"Anton",Impact,sans-serif;font-size:11px;text-transform:uppercase;color:var(--mute);margin-top:-2px}
+.r .badge{position:absolute;top:-9px;right:-8px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--deep);background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.r .badge svg{width:16px;height:16px}
+.r.on .fl{box-shadow:0 0 0 3px var(--white)}
+.r.on.v .fl{box-shadow:0 0 0 3px var(--been)}.r.on.u .fl{box-shadow:0 0 0 3px var(--soon)}
+.r.on.v .badge{background:var(--been)}.r.on.u .badge{background:var(--soon)}
+.nores{font-weight:400;letter-spacing:.03em;text-transform:uppercase;grid-column:1/-1;font-family:"Anton",Impact,sans-serif;font-size:16px;line-height:1.25;color:var(--mute)}
+
+/* status sheet */
+.scrim{position:fixed;inset:0;z-index:30;background:rgba(5,10,40,.55)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--deep);border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));max-width:600px;margin:0 auto;animation:up .2s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.who{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.who .fl{width:88px;flex:none}
+.who b{font-weight:400;font-size:38px;line-height:.9;text-transform:uppercase}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opts button{font-size:22px;text-transform:uppercase;padding:14px 4px 12px;border-radius:12px;cursor:pointer;border:2px solid rgba(255,255,255,.2);background:transparent}
+.opts button[data-s="v"][aria-pressed="true"]{background:var(--been);border-color:var(--been);color:var(--deep)}
+.opts button[data-s="u"][aria-pressed="true"]{background:var(--soon);border-color:var(--soon);color:var(--deep)}
+.opts button[data-s="w"][aria-pressed="true"]{background:var(--white);border-color:var(--white);color:var(--deep)}
+.rm{font-weight:400;letter-spacing:.03em;display:block;width:100%;margin-top:14px;border:0;background:none;font-family:"Anton",Impact,sans-serif;font-size:16px;text-transform:uppercase;color:var(--mute);padding:10px;cursor:pointer}
+.rm.sure{color:#ff8a8a}
+
+.toast{font-weight:400;letter-spacing:.03em;text-transform:uppercase;position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;background:var(--deep);color:var(--white);font-family:"Anton",Impact,sans-serif;font-size:17px;padding:11px 16px;border-radius:99px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<main class="app">
+  <h1 id="title">40by40</h1>
+  <div class="status">
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="tally"><div class="count" id="count" aria-live="polite">0<small>/40</small></div><div class="total" id="total">0 total</div></div>
+  </div>
+  <div class="key"><span><i class="v"></i><span id="kv">Been 0</span></span><span><i class="u"></i><span id="ku">Soon 0</span></span><span><i></i><span id="kw">Someday 0</span></span></div>
+  <div id="groups"></div>
+</main>
+<div id="layer"></div>
+
+<script>
+/* ============ DATA ============ */
+const GOAL=40;
+const STATUS=[['v','Been','been'],['u','Soon','soon'],['w','Someday','someday']];
+const LABEL={v:'Been',u:'Soon',w:'Someday'};
+/* country catalog, fetched from countries.json: rows are [ISO, name, continent, aliases] */
+let COUNTRIES=[], FLAG_SVG={}, BY_CODE={}, INDEX=[];
+const fold=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+async function loadCatalog(){
+  const data=await (await fetch('countries.json')).json();
+  COUNTRIES=data.countries; FLAG_SVG=data.flags;
+  BY_CODE=Object.fromEntries(COUNTRIES.map(([c,n,cont,al])=>[c,{c,n,cont,al}]));
+  INDEX=COUNTRIES.map(([c,n,cont,al])=>({c,n,name:fold(n),alt:fold(al||''),code:c.toLowerCase()}));
+}
+
+const flagURLs={};
+function flagURL(c){
+  if(!flagURLs[c]) flagURLs[c]=URL.createObjectURL(new Blob([FLAG_SVG[c]],{type:'image/svg+xml'}));
+  return flagURLs[c];
+}
+const img=(c,lazy)=>`<img class="fl" src="${flagURL(c)}" alt=""${lazy?' loading="lazy"':''}>`;
+
+function search(q){
+  q=fold(q.trim());
+  if(!q) return INDEX;
+  const words=s=>s.split(/[\s&.'-]+/);
+  const rank=x=>x.name.startsWith(q)?0:words(x.name).some(w=>w.startsWith(q))?1:x.code===q?1:words(x.alt).some(w=>w.startsWith(q))||x.alt.includes(q)?2:x.name.includes(q)?3:9;
+  return INDEX.map(x=>[rank(x),x]).filter(([r])=>r<9).sort((a,b)=>a[0]-b[0]||a[1].name.localeCompare(b[1].name)).map(([,x])=>x);
+}
+
+/* ============ STORE ============
+   items: { ISO: { s: 'v'|'u'|'w', t: epoch ms } }
+   Saved to the page's shared database when available, otherwise to this browser. */
+const LS_KEY='40by40-items';
+const store={
+  items:{}, canWrite:true, ref:null, queue:Promise.resolve(), listeners:[],
+  on(fn){this.listeners.push(fn)},
+  emit(){this.listeners.forEach(fn=>fn())},
+  status(c){return this.items[c]?.s},
+  set(c,s){this.items={...this.items,[c]:{s,t:Date.now()}};this.save();this.emit()},
+  remove(c){const n={...this.items};delete n[c];this.items=n;this.save();this.emit()},
+  save(){
+    const body={items:this.items};
+    if(this.ref){
+      this.queue=this.queue.then(()=>this.ref.set(body)).catch(err=>{
+        if(err?.code==='invalid_argument'){this.canWrite=false;this.emit();toast('You can view this list but not change it')}
+        else toast('Couldn\'t save. Check your connection and try again.');
+      });
+    }else{try{localStorage.setItem(LS_KEY,JSON.stringify(this.items))}catch(e){}}
+  },
+  async connect(){
+    try{this.items=JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch(e){this.items={}}
+    this.emit();
+    const claude=window.claude; if(!claude?.use) return;
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(user){this.canWrite=user.canEdit()}
+    if(!db){this.emit();return}
+    this.ref=db.doc('trips/main');
+    this.ref.onSnapshot(snap=>{this.items=(snap.exists&&snap.data().items)||{};this.emit()},()=>{});
+  }
+};
+
+/* ============ VIEW ============ */
+const $=id=>document.getElementById(id);
+let pop=null;
+
+function groups(){
+  const g={v:[],u:[],w:[]};
+  for(const [c,it] of Object.entries(store.items)) if(BY_CODE[c]&&g[it.s]) g[it.s].push(c);
+  const byName=(a,b)=>BY_CODE[a].n.localeCompare(BY_CODE[b].n);
+  g.v.sort(byName); g.u.sort(byName); g.w.sort(byName);
+  return g;
+}
+
+const PLUS=`<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 2v14M2 9h14"/></svg>`;
+const CHECK=`<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.6 3.6L13.5 4.5"/></svg>`;
+const EMPTY={v:'No countries yet. Tap + to add one you\'ve been to.',u:'Nothing booked. Tap + to add your next trip.',w:'Your wish list is empty. Tap + to add places you want to see.'};
+
+function render(){
+  const g=groups(), v=g.v.length, u=g.u.length;
+  $('count').innerHTML=`${v}<small>/${GOAL}</small>`;
+  const nv=Math.min(v,GOAL), nu=Math.min(u,GOAL-nv);
+  $('dots').innerHTML='<i class="v"></i>'.repeat(nv)+'<i class="u"></i>'.repeat(nu)+'<i></i>'.repeat(GOAL-nv-nu);
+  $('total').textContent=(v+u+g.w.length)+' total';
+  $('kv').textContent='Been '+v; $('ku').textContent='Soon '+u; $('kw').textContent='Someday '+g.w.length;
+  $('groups').innerHTML=STATUS.map(([s,label,cls])=>`<section class="${cls}">
+    <div class="sh"><h2>${label}<sup>${g[s].length}</sup></h2>${store.canWrite?`<button class="add" data-add="${s}" aria-label="Add a country to ${label}">${PLUS}</button>`:''}</div>
+    <div class="grid">${g[s].length?g[s].map(c=>`<button class="t${c===pop?' pop':''}" data-c="${c}" aria-label="${BY_CODE[c].n}, ${label}">${img(c)}<b>${BY_CODE[c].n}</b></button>`).join(''):`<p class="empty">${EMPTY[s]}</p>`}</div>
+  </section>`).join('');
+  pop=null;
+}
+store.on(render);
+
+function fitTitle(){
+  const h=$('title'); h.style.fontSize='100px';
+  h.style.fontSize=Math.floor(100*h.parentElement.clientWidth/h.scrollWidth*.995)+'px';
+}
+addEventListener('resize',fitTitle); document.fonts?.ready.then(fitTitle); fitTitle();
+
+let toastT;
+function toast(msg){
+  clearTimeout(toastT);
+  let el=document.querySelector('.toast');
+  if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');document.body.appendChild(el)}
+  el.textContent=msg; toastT=setTimeout(()=>el.remove(),2200);
+}
+
+/* ---- full-screen search: adds into the section whose + was tapped ---- */
+const layer=$('layer');
+let mode=null, opener=null;
+function openSearch(s,btn){
+  mode=s; opener=btn;
+  layer.innerHTML=`<div class="over" role="dialog" aria-modal="true" aria-label="Add a country to ${LABEL[s]}"><div class="in">
+    <div class="bar"><label class="field"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="8" cy="8" r="5.5"/><path d="M12.2 12.2l4 4"/></svg>
+      <span class="sr">Search countries</span><input id="q" type="search" placeholder="Where next?" autocomplete="off" enterkeyhint="search"></label>
+      <button class="done" data-close>Done</button></div>
+    <div class="mode">Tap a flag to add it to <b class="${s}">${LABEL[s]}</b></div>
+    <div class="results" id="results"></div></div></div>`;
+  const q=$('q'); q.addEventListener('input',()=>renderResults(q.value));
+  renderResults(''); q.focus();
+}
+function renderResults(q){
+  const list=search(q), box=$('results'); if(!box) return;
+  box.innerHTML=list.length?list.map(x=>{const s=store.status(x.c);return `<button class="r${s?' on '+s:''}" data-c="${x.c}" aria-label="${x.n}${s?', on your list as '+LABEL[s]+(s===mode?'. Tap to remove':''):''}">${img(x.c,true)}<b>${x.n}</b>${s?`<small>${LABEL[s]}</small>`:''}<span class="badge" aria-hidden="true">${s?CHECK:PLUS}</span></button>`}).join('')
+    :`<p class="nores">No country matches "${q.replace(/[<>&"]/g,'')}". Try the English name or a nickname like Holland or USA.</p>`;
+}
+function closeLayer(){layer.innerHTML='';mode=null;opener?.focus?.();opener=null}
+
+/* ---- status sheet for a country already on the list ---- */
+function openSheet(c,btn){
+  if(!store.canWrite) return;
+  opener=btn; const cur=store.status(c);
+  layer.innerHTML=`<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${BY_CODE[c].n}">
+    <div class="who">${img(c)}<b>${BY_CODE[c].n}</b></div>
+    <div class="opts">${STATUS.map(([s,l])=>`<button data-s="${s}" data-c="${c}" aria-pressed="${s===cur}">${l}</button>`).join('')}</div>
+    <button class="rm" data-rm="${c}">Remove from my list</button></div>`;
+  layer.querySelector('.opts [aria-pressed="true"]').focus();
+}
+
+$('groups').addEventListener('click',e=>{
+  const a=e.target.closest('[data-add]'); if(a) return openSearch(a.dataset.add,a);
+  const t=e.target.closest('.t'); if(t) openSheet(t.dataset.c,t);
+});
+layer.addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')) return closeLayer();
+  const r=e.target.closest('.r');
+  if(r){
+    const c=r.dataset.c, was=store.status(c);
+    if(was===mode){store.remove(c);toast(`${BY_CODE[c].n} removed`);renderResults($('q').value);return}
+    pop=c; store.set(c,mode);
+    toast(was?`${BY_CODE[c].n} moved to ${LABEL[mode]}`:`${BY_CODE[c].n} added to ${LABEL[mode]}`);
+    renderResults($('q').value); return;
+  }
+  const o=e.target.closest('.opts button');
+  if(o){const {c,s}=o.dataset; closeLayer(); if(store.status(c)!==s){pop=c;store.set(c,s);toast(`${BY_CODE[c].n} moved to ${LABEL[s]}`)} return}
+  const rm=e.target.closest('[data-rm]');
+  if(rm){
+    if(!rm.classList.contains('sure')){rm.classList.add('sure');rm.textContent=`Tap again to remove ${BY_CODE[rm.dataset.rm].n}`;return}
+    const c=rm.dataset.rm; closeLayer(); store.remove(c); toast(`${BY_CODE[c].n} removed`);
+  }
+});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&layer.innerHTML)closeLayer()});
+
+loadCatalog().then(()=>store.connect()).catch(()=>{
+  $('groups').innerHTML='<p class="empty">The country list didn\'t load. Check your connection and reload the page.</p>';
+});
+</script>
+
+<script>
+/* Android back button: close whatever is open, otherwise leave the app */
+(function(){
+  var App = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if(!App) return;
+  App.addListener('backButton', function(){
+    if(document.getElementById('layer').innerHTML) closeLayer();
+    else App.exitApp();
+  });
+})();
+</script>
+<script>
+/* offline support + ask Safari to keep the saved list */
+if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js');
+if(navigator.storage && navigator.storage.persist) navigator.storage.persist();
+</script>
+</body>
+</html>
